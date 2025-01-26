@@ -34,11 +34,11 @@ test('Dummy Test #1', () => {
   assert(new DummyExtended(1).foo_method() === 'Vous êtes un imbécile (1) !')
 });
 
-const EXPECTED = `Argument #0: 1
-Argument #1: 2
-Argument #2: abc
-Argument #3: xyz
-Argument #4: 3`
+const EXPECTED = `Argument #0 : 1
+Argument #1 : 2
+Argument #2 : abc
+Argument #3 : xyz
+Argument #4 : 3`
 
 test('Dummy Test #2', () => {
   function foo(){
@@ -46,7 +46,7 @@ test('Dummy Test #2', () => {
     let to_return = '';
     for (let i = 0; i < arguments.length; ++i)
     {
-      to_return += `Argument #${i}: ${arguments[i]}\n`;
+      to_return += `Argument #${i} : ${arguments[i]}\n`;
     }
     to_return = to_return.substring(0, to_return.length - 1);
     return to_return;
@@ -64,7 +64,7 @@ test('Dummy Test #3', () => {
     let to_return = '';
     for (let a of params)
     {
-      to_return += `Argument #${i++}: ${a}\n`;
+      to_return += `Argument #${i++} : ${a}\n`;
     }
     to_return = to_return.substring(0, to_return.length - 1);
     return to_return;
@@ -73,6 +73,52 @@ test('Dummy Test #3', () => {
   let result = foo(1, 2, 'abc', "xyz", `${1 + 2}`);
   console.log(result);
   assert(result == EXPECTED);
+});
+
+test('Promise Test #1', () => {
+  let promise = new Promise((resolve, reject) => {
+    let result = true;
+    let time = 20; // [ms]
+    setTimeout(() => {
+      if (result)
+        resolve('Succès !');
+      else
+        reject('Échec !');
+    }, time);
+  });
+
+  let status;
+  promise.then((data) => {
+    console.log(`Positif : ${data}`)
+    assert(true);
+  })
+  .catch((data) => {
+    console.log(`Négatif : ${data}`);
+    assert(false);
+  });
+
+  assert(status == undefined);
+});
+
+test('Proxy Test #1', () => {
+  class Watched {
+    constructor(_a, _b)
+    {
+      this._a = _a;
+      this._b = _b;
+    }
+  };
+
+  const watched = new Watched(1, 2);
+  const proxy = new Proxy(watched, {
+    get(target, property)
+    {
+      console.log(`La propriété ${property} a été demandée !`);
+      return target[property] + 1;
+    }
+  });
+
+  assert(proxy._a == 2 && proxy._b == 3);
 });
 
 
